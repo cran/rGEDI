@@ -1,0 +1,60 @@
+Package: rGEDI
+Type: Package
+Title: NASA's Global Ecosystem Dynamics Investigation (GEDI) Data
+        Visualization and Processing
+Version: 0.1.1
+Authors@R: c(
+    person("Carlos Alberto", "Silva", email = "carlos_engflorestal@outlook.com", role = c("aut", "cre", "cph")),
+    person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cph")),
+    person("Ruben", "Valbuena", email = "r.valbuena@bangor.ac.uk", role = c("aut","ctb")),
+    person("Steve", "Hancock", email = "steven.hancock@ed.ac.uk", role = c("aut","ctb")),
+    person("Adrian", "Cardil", email = "adriancardil@gmail.com", role = c("aut","ctb")),
+    person("Eben North", "Broadbent", email = "eben@ufl.edu", role = c("aut","ctb")),
+    person("Danilo Roberti Alves de", "Almeida", email = "daniloflorestas@gmail.com", role = c("aut","ctb")),
+    person("Celso H. L.", "Silva Junior", email = "celso.junior@inpe.br", role = c("aut","ctb")),
+    person("Carine", "Klauberg", email = "carine_klauberg@hotmail.com", role = c("aut","ctb")),
+    person("Burton", "Garbow", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
+    person("Kenneth", "Hillstrom", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
+    person("Jorge", "More", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
+    person("Craig", "Markwardt", email = "", role = ("cph"), comment = "Is the author of the enhanced MINPACK-1 Least Squares Fitting Library"))
+Maintainer: Carlos Alberto Silva <carlos_engflorestal@outlook.com>
+Description: Set of tools for downloading, reading, visualizing and processing GEDI Level1B, Level2A and Level2B data.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: methods
+Imports: bit64, curl, data.table, fs, getPass, ggplot2, hdf5r,
+        jsonlite, lazyeval, raster, RColorBrewer, sp, stats
+Suggests: devtools, knitr, leaflet, leafsync, lidR, plot3D, rasterVis,
+        rmarkdown, viridis, xtable
+SystemRequirements: GNU Scientific Library >= 2.1, HDF5 (>= 1.8.13),
+        libgeotiff (>= 1.4.0)
+NeedsCompilation: yes
+RoxygenNote: 7.0.2
+VignetteBuilder: knitr
+BugReports: https://groups.yahoo.com/neo/groups/rGEDI
+URL: https://github.com/carlos-alberto-silva/rGEDI
+Copyright: inst/COPYRIGHTS
+Author: Carlos Alberto Silva [aut, cre, cph],
+  Caio Hamamura [aut, cph],
+  Ruben Valbuena [aut, ctb],
+  Steve Hancock [aut, ctb],
+  Adrian Cardil [aut, ctb],
+  Eben North Broadbent [aut, ctb],
+  Danilo Roberti Alves de Almeida [aut, ctb],
+  Celso H. L. Silva Junior [aut, ctb],
+  Carine Klauberg [aut, ctb],
+  Burton Garbow [cph] (Is the author of the MINPACK-1 Least Squares
+    Fitting Library),
+  Kenneth Hillstrom [cph] (Is the author of the MINPACK-1 Least Squares
+    Fitting Library),
+  Jorge More [cph] (Is the author of the MINPACK-1 Least Squares Fitting
+    Library),
+  Craig Markwardt [cph] (Is the author of the enhanced MINPACK-1 Least
+    Squares Fitting Library)
+Repository: CRAN
+Repository/R-Forge/Project: rgedi
+Repository/R-Forge/Revision: 19
+Repository/R-Forge/DateTimeStamp: 2020-03-31 16:53:31
+Date/Publication: 2020-04-01 09:50:06 UTC
+Packaged: 2020-03-31 17:11:00 UTC; rforge
