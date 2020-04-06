@@ -26,7 +26,7 @@
 #'                   package="rGEDI")
 #'
 #'# Unzipping GEDI level1B data
-#'level1Bpath <- unzip(level1B_fp_zip,exdir = dirname(level1B_fp_zip))
+#'level1Bpath <- unzip(level1B_fp_zip,exdir = outdir)
 #'
 #'# Reading GEDI level1B data (h5 file)
 #'level1b<-readLevel1B(level1Bpath=level1Bpath)
@@ -91,7 +91,7 @@ clipLevel1B = function(level1b, xmin, xmax, ymin, ymax, output=""){
 #'                   package="rGEDI")
 #'
 #'# Unzipping GEDI level1B data
-#'level1Bpath <- unzip(level1B_fp_zip,exdir = dirname(level1B_fp_zip))
+#'level1Bpath <- unzip(level1B_fp_zip,exdir = outdir)
 #'
 #'# Reading GEDI level1B data (h5 file)
 #'level1b<-readLevel1B(level1Bpath=level1Bpath)
@@ -222,7 +222,7 @@ clipByMask1B = function(level1b, masks, output = "") {
           hdf5r::createDataSet(newFile,dt,h5_dt[], dtype=dtype, chunk_dim=chunkdims)
         } else if (dt_dim == beam_shot_n) {
           hdf5r::createDataSet(newFile,dt,h5_dt[mask], dtype=dtype, chunk_dim=chunkdims)
-        } else if (dt_dim %in% total_waveforms) {
+        } else if (dt_dim %in% total_waveforms | dt_dim %% beam_shot_n == 0) {
           prefix = ifelse(substr(basename(dt),1,2)=="rx", "rx", "tx")
           sampleCount = sprintf("%s_sample_count", prefix)
           sampleStartIndex = sprintf("%s_sample_start_index", prefix)

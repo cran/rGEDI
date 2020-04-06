@@ -57,10 +57,13 @@ library(rGEDI)
 #  ul_lon<- -13.76913
 #  lr_lon<- -13.67646
 #  
+#  # Specifying the date range
+#  daterange=c("2019-07-01","2020-05-22")
+#  
 #  # Get path to GEDI data
-#  gLevel1B<-gedifinder(product="GEDI01_B",ul_lat, ul_lon, lr_lat, lr_lon,version="001")
-#  gLevel2A<-gedifinder(product="GEDI02_A",ul_lat, ul_lon, lr_lat, lr_lon,version="001")
-#  gLevel2B<-gedifinder(product="GEDI02_B",ul_lat, ul_lon, lr_lat, lr_lon,version="001")
+#  gLevel1B<-gedifinder(product="GEDI01_B",ul_lat, ul_lon, lr_lat, lr_lon,version="001",daterange=daterange)
+#  gLevel2A<-gedifinder(product="GEDI02_A",ul_lat, ul_lon, lr_lat, lr_lon,version="001",daterange=daterange)
+#  gLevel2B<-gedifinder(product="GEDI02_B",ul_lat, ul_lon, lr_lat, lr_lon,version="001",daterange=daterange)
 #  
 #  # Set output dir for downloading the files
 #  outdir=getwd()
