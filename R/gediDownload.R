@@ -11,7 +11,7 @@
 #'@return No return value on success, on failure it will \code{stop()}
 #'@references Credits to Cole Krehbiel. Code adapted from <https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_r/browse/DAACDataDownload.R>
 #'@examples
-#'\donttest{
+#'\dontrun{
 #'# Set path to GEDI data
 #'# herein we will only download xml metedata
 #'filepath=c(paste0(
@@ -25,6 +25,17 @@
 #'
 #'# Set dir to download files to
 #'outdir=tempdir()
+#'
+#'# Create .netrc file
+#'netrc = file.path(outdir, ".netrc")
+#'netrc_conn <- file(netrc)
+#'
+#'writeLines(c("machine urs.earthdata.nasa.gov",
+#'             sprintf("login %s", Sys.getenv("NASA_USER")),
+#'             sprintf("password %s", Sys.getenv("NASA_PASSWORD"))
+#'), netrc_conn)
+#'
+#'close(netrc_conn)
 #'
 #'#' Downloading GEDI data
 #'gediDownload(filepath,outdir)
@@ -88,7 +99,10 @@ gediDownloadFile = function(url, outdir, overwrite, buffer_size, netrc) {
 
   tryCatch({
     fileHandle=file(resume, open="ab", raw = T)
-    conn=curl::curl(url, handle=h, open="rb")
+    conn = tryCatch(curl::curl(url, handle=h, open="rb"), error = function(e) {
+          file.remove(netrc)
+          stop(e)
+        })
     headers=rawToChar(curl::handle_data(h)$headers)
     total_size=as.numeric(gsub("[^\u00e7]*Content-Length: ([0-9]+)[^\u00e7]*","\\1",x=headers, perl = T))
     while(TRUE) {
@@ -126,7 +140,7 @@ gediDownloadFile = function(url, outdir, overwrite, buffer_size, netrc) {
 getNetRC = function(dl_dir) {
   netrc <- file.path(dl_dir,'.netrc')  # Path to netrc file
   # ------------------------------------CREATE .NETRC FILE------------------------------------------ #
-  if (file.exists(netrc) == FALSE || grepl("urs.earthdata.nasa.gov", readLines(netrc)) == FALSE) {
+  if (file.exists(netrc) == FALSE || any(grepl("urs.earthdata.nasa.gov", readLines(netrc))) == FALSE) {
     netrc_conn <- file(netrc)
 
     # User will be prompted for NASA Earthdata Login Username and Password below

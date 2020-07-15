@@ -42,7 +42,7 @@ head = function(...) {
 #  
 #  #The development version:
 #  library(devtools)
-#  devtools::install_github("carlos-alberto-silva/rGEDI", dependencies = TRUE)
+#  devtools::install_git("https://github.com/carlos-alberto-silva/rGEDI", dependencies = TRUE)
 #  
 #  # loading rGEDI package
 #  library(rGEDI)
