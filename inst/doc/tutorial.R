@@ -77,20 +77,27 @@ library(rGEDI)
 #  #** Herein, we are using only a GEDI sample dataset for this tutorial.
 #  # downloading zip file
 #  zipfile = file.path(outdir, "examples.zip")
-#  download.file("https://github.com/carlos-alberto-silva/rGEDI/releases/download/datasets/examples.zip",destfile=zipfile)
+#  download.file("https://github.com/carlos-alberto-silva/rGEDI/releases/download/datasets/examples.zip", destfile=zipfile)
 #  
 #  # unzip file
 #  unzip(zipfile, exdir=outdir)
 
 ## ---- echo = FALSE, results="hide"--------------------------------------------
 zipfile = file.path(outdir, "examples.zip")
-if (!file.exists(zipfile)) {
-  res=download.file(
-    url="https://github.com/carlos-alberto-silva/rGEDI/releases/download/datasets/examples.zip", 
-    destfile=zipfile
-  )
-}
-unzip(zipfile, exdir=outdir)
+
+tryCatch({
+  if (!file.exists(zipfile)) {
+    res=download.file(
+      url="https://github.com/carlos-alberto-silva/rGEDI/releases/download/datasets/examples.zip", 
+      destfile=zipfile,
+      timeout=600
+    )
+  }
+  unzip(zipfile, exdir=outdir)
+}, error=function(e) {
+  message("Could not download the example file, vignette is aborting")
+  knitr::opts_chunk$set(eval=FALSE)
+})
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  # Reading GEDI data
@@ -456,15 +463,39 @@ head(pai_max)
 cover_metrics_st<-polyStatsLevel2BVPM(level2BVPM_clip_gb,func=mySetOfMetrics(cover),id="poly_id")
 head(cover_metrics_st)
 
-## ---- fig.width=7, fig.height=3-----------------------------------------------
+## ---- echo=TRUE, eval=TRUE----------------------------------------------------
 # Computing a serie of statistics of GEDI RH100 metric
 rh100metrics<-gridStatsLevel2AM(level2AM = level2AM, func=mySetOfMetrics(rh100), res=0.005)
 
-# View maps
-library(rasterVis)
-library(viridis)
+## ---- fig.width=7, fig.heiglht=3, echo=TRUE, eval=FALSE-----------------------
+#  # View maps
+#  library(rasterVis)
+#  library(viridis)
+#  
+#  levelplot(rh100metrics,
+#                      layout=c(4, 1),
+#                      margin=FALSE,
+#                      xlab = "Longitude (degree)", ylab = "Latitude (degree)",
+#                      colorkey=list(
+#                        space='right',
+#                        labels=list(at=seq(0, 18, 2), font=4),
+#                        axis.line=list(col='black'),
+#                        width=1),
+#                      par.settings=list(
+#                        strip.border=list(col='gray'),
+#                        strip.background=list(col='gray'),
+#                        axis.line=list(col='gray')
+#                      ),
+#                      scales=list(draw=TRUE),
+#                      col.regions=viridis,
+#                      at=seq(0, 18, len=101),
+#                      names.attr=c("rh100 min","rh100 max","rh100 mean", "rh100 sd"))
 
-levelplot(rh100metrics,
+## ---- fig.width=7, fig.heiglht=3, echo=FALSE, eval=TRUE-----------------------
+rasterVisLoaded = require(rasterVis) & require(viridis)
+
+if (rasterVisLoaded) {
+  levelplot(rh100metrics,
                     layout=c(4, 1),
                     margin=FALSE,
                     xlab = "Longitude (degree)", ylab = "Latitude (degree)",
@@ -482,14 +513,38 @@ levelplot(rh100metrics,
                     col.regions=viridis,
                     at=seq(0, 18, len=101),
                     names.attr=c("rh100 min","rh100 max","rh100 mean", "rh100 sd"))
+}
 
-## ---- fig.width=7, fig.height=3-----------------------------------------------
+## -----------------------------------------------------------------------------
 # Computing a serie of statistics of Total Plant Area Index
 level2BVPM$pai[level2BVPM$pai==-9999]<-NA # assing NA to -9999
 pai_metrics<-gridStatsLevel2BVPM(level2BVPM = level2BVPM, func=mySetOfMetrics(pai), res=0.005)
 
-# View maps
-levelplot(pai_metrics,
+
+## ---- eval = FALSE, echo=TRUE-------------------------------------------------
+#  # View maps
+#  levelplot(pai_metrics,
+#                     layout=c(4, 1),
+#                     margin=FALSE,
+#                     xlab = "Longitude (degree)", ylab = "Latitude (degree)",
+#                     colorkey=list(
+#                       space='right',
+#                       labels=list(at=seq(0, 1.5, 0.2), font=4),
+#                       axis.line=list(col='black'),
+#                       width=1),
+#                     par.settings=list(
+#                       strip.border=list(col='gray'),
+#                       strip.background=list(col='gray'),
+#                       axis.line=list(col='gray')
+#                     ),
+#                     scales=list(draw=TRUE),
+#                     col.regions=viridis,
+#                     at=seq(0, 1.5, len=101),
+#                     names.attr=c("PAI min","PAI max","PAI mean", "PAI sd"))
+
+## ---- fig.width=7, fig.height=3, eval = TRUE, echo = FALSE--------------------
+if (rasterVisLoaded) {
+  levelplot(pai_metrics,
                    layout=c(4, 1),
                    margin=FALSE,
                    xlab = "Longitude (degree)", ylab = "Latitude (degree)",
@@ -507,7 +562,7 @@ levelplot(pai_metrics,
                    col.regions=viridis,
                    at=seq(0, 1.5, len=101),
                    names.attr=c("PAI min","PAI max","PAI mean", "PAI sd"))
-
+}
 
 ## ---- fig.width=6, fig.height=5, results = FALSE------------------------------
 # specify the path to ALS data

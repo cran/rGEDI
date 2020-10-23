@@ -1,4 +1,4 @@
-608f808ba83966ab73a48c5b4778cb6e *DESCRIPTION
+a1e90442c3cec8fae7f9a1d048feb150 *DESCRIPTION
 3f1d4ab3469822a54fce8d63c77513c4 *NAMESPACE
 b38006ea674ee803ceccd13ce0486726 *R/C_processExtractMetrics.R
 f1ce3bf3a3e43f5117e087b675494f00 *R/C_simulateFullWaveform.R
@@ -20,7 +20,7 @@ a89386d62143977e96266b39ef11a235 *R/getLevel1BWF.R
 638fc49ff23009f282f00e3f6fc9d897 *R/getLevel2AM.R
 70e2602c1758b5ecb42731d47440dbdb *R/getLevel2BPAIProfile.R
 676dbbbfc061d1ae92768d46b4ed8f66 *R/getLevel2BPAVDProfile.R
-e297259c1d0dd0abf0d751d625e9ea07 *R/getLevel2BVPM.R
+13023afabb79bbde69d890cbada8a01d *R/getLevel2BVPM.R
 3bee9e9eb07865189519ccce202a9109 *R/gridStatsLevel2AM.R
 00e022942dc9954083df6fbd2ba98a2b *R/gridStatsLevel2BVPM.R
 92f95582b2a290f74756d9e33fc80479 *R/libHandler.R
@@ -34,15 +34,15 @@ d44f7de0e29b6e829e8a02043b260aee *R/rGEDI-package.R
 a337c4149c8d499fbfdce6ef8aab9bcb *R/readLevel2A.R
 ba68a6b14a529beae543dfbd2834cc5f *R/readLevel2B.R
 ce3886a27e5628c12a33e75adfdce8d1 *R/zzz.R
-a1b6c801d4e27d85a5f06cfef9f528ad *README.md
+704a87bc9de4370ff091254f4b611336 *README.md
 cc4a66b4996c35a776bc8e36c92cb548 *build/vignette.rds
 8805756d9e3b2a5aae6182ffeac56c3e *cleanup
 2b822c95655786514d264804c0913e4b *configure
-08de6c1050d5c36a5fa147b1ac309238 *configure.ac
+a2a547449abcd6458eb0430102694422 *configure.ac
 7d68bee62b5364a2eff4a3fe707a6a58 *inst/COPYRIGHTS
-60d39e72c12b52d8f1abc7de9595f6da *inst/doc/tutorial.R
-0515ce223f60370b1312ad1b021803c6 *inst/doc/tutorial.Rmd
-40501c08b506782383441abcb3dcbf36 *inst/doc/tutorial.html
+51edff43483897bd582b67c6e578eb1e *inst/doc/tutorial.R
+90220ad7a2aba2de0cc59520cd49e50f *inst/doc/tutorial.Rmd
+5a9ffb941296a0ec90fbcd495cfe3f4c *inst/doc/tutorial.html
 4a766286a07a8eb81c101e1c023e51a8 *inst/extdata/Amazon.zip
 8cb2d7d3d5475e82fe1f16234f33b6e8 *inst/extdata/GEDI01_B_2019108080338_O01964_T05337_02_003_01_sub.zip
 5b7593af8ea48e1ea56b5604e7932314 *inst/extdata/GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip
@@ -79,7 +79,7 @@ b5cc07d79f625dd4b8fffaf62a0293e0 *man/gedi.level1bSim-class.Rd
 1db67666852d702a43844209ba858ff6 *man/gedi.level2a-class.Rd
 8fa24c3c90454b0aaf84858f5a5a20d1 *man/gedi.level2b-class.Rd
 ead1b413463b3f6cfc6701d7f2eeefc1 *man/gediDownload.Rd
-65b18129b1951715a605daac2e695100 *man/gediWFMetrics.Rd
+19fb2d8b256746afe86603ec5af92012 *man/gediWFMetrics.Rd
 e315c6d7b453af46dcb208183b3a19b7 *man/gediWFSimulator.Rd
 5052191df84a27d47a229c59e56ec096 *man/gedifinder.Rd
 9e9b4b47ca4d31a63f25ea8179f2770f *man/getLevel1BGeo.Rd
@@ -213,4 +213,4 @@ d445f4479a376246eb31f7aae63b0098 *src/tools/functionWrappers.h
 4ee903ecfbc10461d2404ad8d1bdcfda *src/tools/tools.h
 56b122120f4c939391eb7e15e3d3cc74 *tools/deps.R
 8d9f4345845bdffe3b19803043e737f6 *tools/winlibs.R
-0515ce223f60370b1312ad1b021803c6 *vignettes/tutorial.Rmd
+90220ad7a2aba2de0cc59520cd49e50f *vignettes/tutorial.Rmd
