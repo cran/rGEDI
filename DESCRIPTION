@@ -2,7 +2,7 @@ Package: rGEDI
 Type: Package
 Title: NASA's Global Ecosystem Dynamics Investigation (GEDI) Data
         Visualization and Processing
-Version: 0.1.9
+Version: 0.1.11
 Authors@R: c(
     person("Carlos Alberto", "Silva", email = "carlos_engflorestal@outlook.com", role = c("aut", "cre", "cph")),
     person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cph")),
@@ -24,14 +24,13 @@ Encoding: UTF-8
 LazyData: true
 Depends: methods
 Imports: bit64, curl, data.table, fs, getPass, ggplot2, hdf5r,
-        jsonlite, lazyeval, raster, RColorBrewer, sp, stats
-Suggests: devtools, knitr, lattice, leaflet, leafsync, lidR, plot3D,
-        rasterVis, rmarkdown, viridis, xtable
+        jsonlite, lazyeval, raster, rgdal, rgeos, RColorBrewer, sp,
+        stats
+Suggests: lattice, leaflet, leafsync, lidR, plot3D, rasterVis, viridis
 SystemRequirements: GNU Scientific Library (>= 2.1), HDF5 (>= 1.8.13),
-        libgeotiff (>= 1.4.0), szip (>= 2.1) zlib (>= 1.2)
+        libgeotiff (>= 1.4.0), szip (>= 2.1), zlib (>= 1.2)
 NeedsCompilation: yes
 RoxygenNote: 7.1.0
-VignetteBuilder: knitr
 BugReports: https://groups.yahoo.com/neo/groups/rGEDI
 URL: https://github.com/carlos-alberto-silva/rGEDI
 Copyright: inst/COPYRIGHTS
@@ -54,7 +53,7 @@ Author: Carlos Alberto Silva [aut, cre, cph],
     Squares Fitting Library)
 Repository: CRAN
 Repository/R-Forge/Project: rgedi
-Repository/R-Forge/Revision: 32
-Repository/R-Forge/DateTimeStamp: 2020-10-23 06:02:58
-Date/Publication: 2020-10-23 17:50:02 UTC
-Packaged: 2020-10-23 06:08:39 UTC; rforge
+Repository/R-Forge/Revision: 38
+Repository/R-Forge/DateTimeStamp: 2021-01-19 13:58:51
+Date/Publication: 2021-01-20 17:10:03 UTC
+Packaged: 2021-01-19 14:17:31 UTC; rforge
