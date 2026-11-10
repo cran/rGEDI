@@ -11,11 +11,11 @@ Class for GEDI level1B
 \section{Slots}{
 
 \describe{
-\item{\code{h5}}{Object of class H5File from \emph{hdf5r} package containing the
-GEDI level1B products: geolocated Waveforms}
+\item{\code{h5}}{A local \code{\link[hdf5r:H5File-class]{H5File}} or a cloud-backed GEDI
+HDF5 connection containing geolocated waveforms.}
 }}
 
 \seealso{
-\code{\link[hdf5r:H5File-class]{hdf5r::H5File}} in the \emph{hdf5r} package and
-https://lpdaac.usgs.gov/products/gedi01_bv001/
+\code{\link[hdf5r:H5File-class]{H5File}} in the \code{hdf5r} package and
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi01-b-002}
 }

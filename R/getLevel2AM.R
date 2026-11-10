@@ -2,19 +2,20 @@
 #'
 #'@description This function extracts Elevation and Relative Height (RH) metrics from GEDI Level2A data.
 #'
-#'@usage getLevel2AM(level2a)
-#'
-#'@param level2a A GEDI Level2A object (output of \code{\link[rGEDI:readLevel2A]{readLevel2A}} function).
+#'@param level2a A GEDI Level2A object (output of [readLevel2A()] function).
 #'An S4 object of class "gedi.level2a".
+#'@param beams Optional beam names. `NULL` reads every beam.
+#'@param include_rh Logical. Include the 101 relative-height columns. Set to
+#'`FALSE` for a faster metadata-only cloud read.
 #'
-#'@return Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
+#'@return Returns an S4 object of class [data.table::data.table]
 #'containing the elevation and relative heights metrics.
 #'
-#'@seealso https://lpdaac.usgs.gov/products/gedi02_av001/
+#'@seealso \url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 #'
 #'@details Characteristics. Flag indicating likely invalid waveform (1=valid, 0=invalid).
 #'\itemize{
-#'\item \emph{beam} Beam identifie
+#'\item \emph{beam} Beam identifier
 #'\item \emph{shot_number} Shot number
 #'\item \emph{degrade_flag} Flag indicating degraded state of pointing and/or positioning information
 #'\item \emph{quality_flag} Flag simplifying selection of most useful data
@@ -25,7 +26,7 @@
 #'\item \emph{lon_lowestmode} Longitude of center of lowest mode
 #'\item \emph{elev_highestreturn} Elevation of highest detected return relative to reference ellipsoid Meters
 #'\item \emph{elev_lowestmode} Elevation of center of lowest mode relative to reference ellipsoid
-#'\item \emph{rh} Relative height metrics at 1\% interval
+#'\item \emph{rh} Relative height metrics at 1% interval
 #'}
 #'
 #'@examples
@@ -48,10 +49,12 @@
 #'
 #'close(level2a)
 #'@export
-getLevel2AM<-function(level2a){
+getLevel2AM<-function(level2a, beams = NULL, include_rh = TRUE){
   level2a<-level2a@h5
   groups_id<-grep("BEAM\\d{4}$",gsub("/","",
-                                     hdf5r::list.groups(level2a, recursive = F)), value = T)
+                                     .gedi_list_groups(level2a, recursive = FALSE)), value = T)
+  if (!is.null(beams)) groups_id <- intersect(groups_id, beams)
+  if (!length(groups_id)) return(data.table::data.table())
   rh.dt<-data.table::data.table()
   pb <- utils::txtProgressBar(min = 0, max = length(groups_id), style = 3)
   i.s=0
@@ -61,34 +64,40 @@ getLevel2AM<-function(level2a){
     utils::setTxtProgressBar(pb, i.s)
     level2a_i<-level2a[[i]]
 
-    if (any(hdf5r::list.datasets(level2a_i)=="shot_number")){
+    if (any(.gedi_list_datasets(level2a_i)=="shot_number")){
 
-    if(length(level2a_i[["rh"]]$dims)==2) {
-      rh=t(level2a_i[["rh"]][,])
-    } else {
-      rh=t(level2a_i[["rh"]][])
-    }
-
-    rhs<-data.table::data.table(
-      beam<-rep(i,length(level2a_i[["shot_number"]][])),
+    available <- .gedi_list_datasets(level2a_i)
+    quality_name <- intersect(c("l2a_quality_flag_rel3", "quality_flag",
+                                "l2a_quality_flag_rel2"), available)[1L]
+    values <- list(
+      beam=rep(i,length(level2a_i[["shot_number"]][])),
       shot_number=level2a_i[["shot_number"]][],
       degrade_flag=level2a_i[["degrade_flag"]][],
-      quality_flag=level2a_i[["quality_flag"]][],
-      quality_flag=level2a_i[["delta_time"]][],
+      delta_time=level2a_i[["delta_time"]][],
       sensitivity=level2a_i[["sensitivity"]][],
       solar_elevation=level2a_i[["solar_elevation"]][],
       lat_lowestmode=level2a_i[["lat_lowestmode"]][],
       lon_lowestmode=level2a_i[["lon_lowestmode"]][],
       elev_highestreturn=level2a_i[["elev_highestreturn"]][],
-      elev_lowestmode=level2a_i[["elev_lowestmode"]][],
-      rh)
+      elev_lowestmode=level2a_i[["elev_lowestmode"]][])
+    if (!is.na(quality_name)) values[[quality_name]] <- level2a_i[[quality_name]][]
+    rhs <- data.table::as.data.table(values)
+    if (isTRUE(include_rh)) {
+      if(length(level2a_i[["rh"]]$dims)==2) {
+        rh=t(level2a_i[["rh"]][,])
+      } else {
+        rh=t(level2a_i[["rh"]][])
+      }
+      rhs <- cbind(rhs, rh)
+    }
     rh.dt<-rbind(rh.dt,rhs)
     }
   }
 
-  colnames(rh.dt)<-c("beam","shot_number","degrade_flag","quality_flag","delta_time",
-                     "sensitivity","solar_elevation","lat_lowestmode","lon_lowestmode",
-                     "elev_highestreturn","elev_lowestmode",paste0("rh",seq(0,100)))
+  if (isTRUE(include_rh) && ncol(rh.dt) >= 101L) {
+    tail_names <- tail(names(rh.dt), 101L)
+    data.table::setnames(rh.dt, tail_names, paste0("rh",seq(0,100)))
+  }
   close(pb)
   return(rh.dt)
 }

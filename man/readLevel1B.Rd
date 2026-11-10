@@ -7,10 +7,11 @@
 readLevel1B(level1Bpath)
 }
 \arguments{
-\item{level1Bpath}{File path pointing to GEDI level1B data. Data in HDF5 Hierarchical Data Format (.h5).}
+\item{level1Bpath}{Local file path or Earthdata Cloud URL pointing to a
+GEDI Level 1B HDF5 granule.}
 }
 \value{
-Returns an S4 object of class "gedi.level1b" containing GEDI level1B data.
+Returns an S4 object of class \code{\link[=gedi.level1b-class]{gedi.level1b}} containing GEDI level1B data.
 }
 \description{
 This function reads GEDI level1B products: geolocated Waveforms
@@ -32,5 +33,5 @@ close(level1b)
 }
 \seealso{
 \code{\link[hdf5r:H5File-class]{hdf5r::H5File}} in the \emph{hdf5r} package and
-https://lpdaac.usgs.gov/products/gedi01_bv001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi01-b-002}
 }

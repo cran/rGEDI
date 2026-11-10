@@ -4,14 +4,25 @@
 \alias{getLevel2BVPM}
 \title{Get GEDI Canopy Cover and Vertical Profile Metrics (GEDI Level2B)}
 \usage{
-getLevel2BVPM(level2b)
+getLevel2BVPM(
+  level2b,
+  cols = c("beam", "shot_number", "algorithmrun_flag", "l2b_quality_flag", "delta_time",
+    "sensitivity", "solar_elevation", "latitude_lastbin", "latitude_bin0",
+    "longitude_bin0", "longitude_lastbin", "elev_highestreturn", "elev_lowestmode",
+    "rh100", "pai", "fhd_normal", "omega", "pgap_theta", "cover"),
+  beams = NULL
+)
 }
 \arguments{
-\item{level2b}{A GEDI Level2B object (output of \code{\link[rGEDI:readLevel2B]{readLevel2B}}
+\item{level2b}{A GEDI Level2B object (output of \code{\link[=readLevel2B]{readLevel2B()}}
 function). An S4 object of class "gedi.level2b".}
+
+\item{cols}{A character vector containing the list of columns to be extracted. See the default columns in the description.}
+
+\item{beams}{Optional beam names. \code{NULL} reads every beam.}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
+Returns an S4 object of class \link[data.table:data.table]{data.table::data.table}
 containing the Vegetation Profile Biophysical Variables.
 }
 \description{
@@ -20,9 +31,9 @@ Total Plant Area Index,	Foliage Height Diversity, Foliage Clumping Index,
 Total Gap Probability (theta), and Total canopy cover.
 }
 \details{
-These are the biophysical variables and additional information extracted:
+These are the biophysical variables and additional information extracted by default:
 \itemize{
-\item \emph{beam} Beam identifie
+\item \emph{beam} Beam identifier
 \item \emph{shot_number} Shot number
 \item \emph{algorithmrun_flag} The L2B algorithm is run if this flag is set to 1 indicating data have sufficient waveform fidelity for L2B to run
 \item \emph{l2b_quality_flag} L2B quality flag
@@ -33,12 +44,15 @@ These are the biophysical variables and additional information extracted:
 \item \emph{latitude_bin0} Latitude of first bin of the pgap_theta_z, interpolated from L1B waveform coordinate
 \item \emph{elev_highestreturn} Elevation of highest detected return relative to reference ellipsoid
 \item \emph{elev_lowestmode} Elevation of center of lowest mode relative to reference ellipsoid
+\item \emph{rh100} RH100 slice
 \item \emph{pai} Total Plant Area Index
 \item \emph{fhd_normal} Foliage Height Diversity
 \item \emph{omega} Foliage Clumping Index
 \item \emph{pgap_theta} Total Gap Probability (theta)
 \item \emph{cover} Total canopy cover
 }
+
+Every other columns in the GEDI2B product are also available, you can specify each column by using the \code{cols} parameter.
 }
 \examples{
 # Specifying the path to GEDI level2B data (zip file)
@@ -54,11 +68,11 @@ level2Bpath <- unzip(level2B_fp_zip,exdir = outdir)
 level2b<-readLevel2B(level2Bpath=level2Bpath)
 
 # Extracting GEDI Vegetation Profile Biophysical Variables
-level2BVPM<-getLevel2BVPM(level2b)
+level2BVPM<-getLevel2BVPM(level2b, cols=c("beam", "shot_number"))
 head(level2BVPM)
 
 close(level2b)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_bv001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-b-002}
 }

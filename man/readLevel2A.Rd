@@ -7,10 +7,11 @@
 readLevel2A(level2Apath)
 }
 \arguments{
-\item{level2Apath}{File path pointing to GEDI level2A data. Data in HDF5 Hierarchical Data Format (.h5).}
+\item{level2Apath}{Local file path or Earthdata Cloud URL pointing to a
+GEDI Level 2A HDF5 granule.}
 }
 \value{
-Returns an S4 object of class "gedi.level2a" containing GEDI level2A data.
+Returns an S4 object of class \code{\link[=gedi.level2a-class]{gedi.level2a}} containing GEDI level2A data.
 }
 \description{
 This function reads GEDI level2A products: ground elevation, canopy top height, and relative heights (RH).
@@ -31,5 +32,5 @@ level2a<-readLevel2A(level2Apath=level2Apath)
 close(level2a)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_av001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 }

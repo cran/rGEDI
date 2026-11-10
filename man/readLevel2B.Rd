@@ -7,10 +7,11 @@
 readLevel2B(level2Bpath)
 }
 \arguments{
-\item{level2Bpath}{File path pointing to GEDI level2B data. Data in HDF5 Hierarchical Data Format (.h5).}
+\item{level2Bpath}{Local file path or Earthdata Cloud URL pointing to a
+GEDI Level 2B HDF5 granule.}
 }
 \value{
-Returns an S4 object of class "gedi.level2b" containing GEDI level2B data.
+Returns an S4 object of class \code{\link[=gedi.level2b-class]{gedi.level2b}} containing GEDI level2B data.
 }
 \description{
 This function reads GEDI level2B products: canopy cover, Plant Area Index (PAI), Plant Area Volume Density (PAVD), and Foliage Height Diversity (FHD).

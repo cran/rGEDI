@@ -11,11 +11,11 @@ Class for GEDI level2A
 \section{Slots}{
 
 \describe{
-\item{\code{h5}}{Object of class H5File from \emph{hdf5r} package containing the
-GEDI level2A products: ground elevation, canopy top height, and relative heights (RH).}
+\item{\code{h5}}{A local \code{H5File} or cloud-backed GEDI HDF5 connection containing
+ground elevation, canopy top height, and relative heights (RH).}
 }}
 
 \seealso{
-\code{\link[hdf5r:H5File-class]{hdf5r::H5File}} in the \emph{hdf5r} package and
-https://lpdaac.usgs.gov/products/gedi02_av001/
+\code{\link[hdf5r:H5File-class]{H5File}} in the \code{hdf5r} package and
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 }

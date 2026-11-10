@@ -2,17 +2,17 @@
 #'
 #'@description This functions plots Plant Area Volume Density profile (GEDI level2B)
 #'
-#'@param level2BPAVDProfile A GEDI Level2B object (output of \code{\link[rGEDI:getLevel2BPAVDProfile]{getLevel2BPAVDProfile}} function).
+#'@param level2BPAVDProfile A GEDI Level2B object (output of [getLevel2BPAVDProfile()] function).
 #'An S4 object of class "data.table".
 #'@param beam Select GEDI beam. Default is "BEAM0101". See details section.
 #'@param elev If TRUE, elevation will be used for plotting the PAVD profile. Otherwise,
 #'height will be used instead.
 #'
-#'@return Returns a ggplot object. See \code{\link[ggplot2:ggplot]{ggplot}} package.
+#'@return Returns a ggplot object. See [ggplot2::ggplot] package.
 #'
-#'@seealso https://lpdaac.usgs.gov/products/gedi02_bv001/
+#'@seealso \url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-b-002}
 #'
-#'@details list of GEDI beams. See the output of \code{\link[rGEDI:getLevel2BPAVDProfile]{getLevel2BPAVDProfile}} function.
+#'@details list of GEDI beams. See the output of [getLevel2BPAVDProfile()] function.
 #'\itemize{
 #'\item \emph{BEAM0000}
 #'\item \emph{BEAM0001}
@@ -56,7 +56,7 @@ plotPAVDProfile<-function(level2BPAVDProfile, beam="BEAM0101", elev=TRUE){
   level2BPAVDProfile_sub$height_bin0[level2BPAVDProfile_sub$height_bin0<0]<-0
 
   n0<-nrow(level2BPAVDProfile_sub)
-  dft<-data.table::melt(level2BPAVDProfile_sub[,c(2,6,8,9:38)], id.vars=c("shot_number","elev_lowestmode", "height_bin0"), variable.name="pavd", value.name="value")
+  dft<-data.table::melt(level2BPAVDProfile_sub[,c(2, 9, 11, 12:41)], id.vars=c("shot_number","elev_lowestmode", "height_bin0"), variable.name="pavd", value.name="value")
   dft$rowids<-rep(1:n0,30)
   df <- as.data.frame(lapply(dft, rep, rep(5,nrow(dft))))
   n<-nrow(df)

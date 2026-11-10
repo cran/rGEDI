@@ -5,11 +5,12 @@
 #'
 #'@usage readLevel2A(level2Apath)
 #'
-#'@param level2Apath File path pointing to GEDI level2A data. Data in HDF5 Hierarchical Data Format (.h5).
+#'@param level2Apath Local file path or Earthdata Cloud URL pointing to a
+#'GEDI Level 2A HDF5 granule.
 #'
-#'@return Returns an S4 object of class "gedi.level2a" containing GEDI level2A data.
+#'@return Returns an S4 object of class [`gedi.level2a-class`] containing GEDI level2A data.
 #'
-#'@seealso https://lpdaac.usgs.gov/products/gedi02_av001/
+#'@seealso \url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 #'
 #'@examples
 #'# Specifying the path to GEDI level2A data (zip file)
@@ -28,7 +29,11 @@
 #'@import hdf5r
 #'@export
 readLevel2A <-function(level2Apath) {
-  level2a_h5 <- hdf5r::H5File$new(level2Apath, mode = 'r')
+  level2a_h5 <- if (inherits(level2Apath, "GEDICloudH5")) level2Apath else if (.is_gedi_url(level2Apath)) {
+    .open_cloud_h5(level2Apath, product = "GEDI02_A")
+  } else {
+    hdf5r::H5File$new(level2Apath, mode = 'r')
+  }
   level2a<- new("gedi.level2a", h5 = level2a_h5)
   return(level2a)
 }

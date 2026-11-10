@@ -4,19 +4,19 @@
 \alias{clipLevel2BPAVDProfileGeometry}
 \title{Clip GEDI Plant Area Volume Density profile by geometry}
 \usage{
-clipLevel2BPAVDProfileGeometry(level2BPAVDProfile, polygon_spdf, split_by)
+clipLevel2BPAVDProfileGeometry(level2BPAVDProfile, polygon, split_by = NULL)
 }
 \arguments{
-\item{level2BPAVDProfile}{A GEDI Level2B object (output of \code{\link[rGEDI:getLevel2BPAIProfile]{getLevel2BPAIProfile}} function).
+\item{level2BPAVDProfile}{A GEDI Level2B object (output of \code{\link[=getLevel2BPAIProfile]{getLevel2BPAIProfile()}} function).
 An S4 object of class "gedi.level2b".}
 
-\item{polygon_spdf}{Polygon. An object of class \code{\link[sp]{SpatialPolygonsDataFrame-class}},
-which can be loaded as an ESRI shapefile using \code{\link[raster:shapefile]{raster::shapefile()}} function in the \emph{shapefile} package.}
+\item{polygon}{Polygon. An object of class \code{\link[sf:sf]{sf::sf}},
+which can be loaded as an ESRI shapefile using \link[sf:st_read]{sf::st_read} function in the \emph{sf} package.}
 
 \item{split_by}{Polygon id. If defined, GEDI data will be clipped by each polygon using the attribute specified by \code{split_by} from the attribute table.}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
+Returns an S4 object of class \link[data.table:data.table]{data.table::data.table}
 containing the Plant Area Volume Density profile data.
 }
 \description{
@@ -25,35 +25,37 @@ Plant Area Index profile within a given geometry
 }
 \examples{
 # Specifying the path to GEDI level2B data (zip file)
-outdir = tempdir()
+outdir <- tempdir()
 level2B_fp_zip <- system.file("extdata",
-                  "GEDI02_B_2019108080338_O01964_T05337_02_001_01_sub.zip",
-                  package="rGEDI")
+  "GEDI02_B_2019108080338_O01964_T05337_02_001_01_sub.zip",
+  package = "rGEDI"
+)
 
 # Unzipping GEDI level2A data
-level2Bpath <- unzip(level2B_fp_zip,exdir = outdir)
+level2Bpath <- unzip(level2B_fp_zip, exdir = outdir)
 
 # Reading GEDI level2B data (h5 file)
-level2b<-readLevel2B(level2Bpath=level2Bpath)
+level2b <- readLevel2B(level2Bpath = level2Bpath)
 
 # Extracting GEDI Plant Area Volume Density profile
-level2BPAVDProfile<-getLevel2BPAVDProfile(level2b)
+level2BPAVDProfile <- getLevel2BPAVDProfile(level2b)
 
 # Specifying the path to shapefile
-polygon_filepath <- system.file("extdata", "stands_cerrado.shp", package="rGEDI")
+polygon_filepath <- system.file("extdata", "stands_cerrado.shp", package = "rGEDI")
 
-# Reading shapefile as SpatialPolygonsDataFrame object
-library(raster)
-polygon_spdf<-shapefile(polygon_filepath)
+# Reading shapefile as sf object
+library(sf)
+polygon <- sf::st_read(polygon_filepath)
 
 # Clipping GEDI Plant Area Volume Density profile by geometry
 level2BPAVDProfile_clip <- clipLevel2BPAVDProfileGeometry(
-                                                         level2BPAVDProfile,
-                                                         polygon_spdf,
-                                                         split_by="id")
+  level2BPAVDProfile,
+  polygon,
+  split_by = "id"
+)
 
 close(level2b)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_bv001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-b-002}
 }

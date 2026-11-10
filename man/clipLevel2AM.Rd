@@ -7,7 +7,7 @@
 clipLevel2AM(level2AM, xmin, xmax, ymin, ymax)
 }
 \arguments{
-\item{level2AM}{A GEDI Level2A object (output of \code{\link[rGEDI:readLevel2A]{readLevel2A}} function).
+\item{level2AM}{A GEDI Level2A object (output of \code{\link[=readLevel2A]{readLevel2A()}} function).
 An S4 object of class "gedi.level2a".}
 
 \item{xmin}{Numeric. West longitude (x) coordinate of bounding rectangle, in decimal degrees.}
@@ -19,7 +19,7 @@ An S4 object of class "gedi.level2a".}
 \item{ymax}{Numeric. North latitude (y) coordinate of bounding rectangle, in decimal degrees.}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
+Returns an S4 object of class \link[data.table:data.table]{data.table::data.table}
 containing the clipped elevation and relative heights metrics.
 }
 \description{
@@ -28,31 +28,32 @@ within a given bounding coordinates
 }
 \examples{
 # Specifying the path to GEDI level2A data (zip file)
-outdir = tempdir()
+outdir <- tempdir()
 level2A_fp_zip <- system.file("extdata",
-                  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
-                  package="rGEDI")
+  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
+  package = "rGEDI"
+)
 
 # Unzipping GEDI level2A data
-level2Apath <- unzip(level2A_fp_zip,exdir = outdir)
+level2Apath <- unzip(level2A_fp_zip, exdir = outdir)
 
 # Reading GEDI level2A data (h5 file)
-level2a<-readLevel2A(level2Apath=level2Apath)
+level2a <- readLevel2A(level2Apath = level2Apath)
 
 # Extracting GEDI Elevation and Height Metrics
-level2AM = getLevel2AM(level2a)
+level2AM <- getLevel2AM(level2a, beams = "BEAM0001")
 
 # Bounding rectangle coordinates
-xmin = -44.15036
-xmax = -44.10066
-ymin = -13.75831
-ymax = -13.71244
+xmin <- -44.15036
+xmax <- -44.10066
+ymin <- -13.75831
+ymax <- -13.71244
 
 # Clipping GEDI data by boundary box extent
-level2AM_clip <- clipLevel2AM(level2AM,xmin, xmax, ymin, ymax)
+level2AM_clip <- clipLevel2AM(level2AM, xmin, xmax, ymin, ymax)
 
 close(level2a)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_av001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 }

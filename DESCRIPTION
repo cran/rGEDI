@@ -2,58 +2,38 @@ Package: rGEDI
 Type: Package
 Title: NASA's Global Ecosystem Dynamics Investigation (GEDI) Data
         Visualization and Processing
-Version: 0.1.11
+Version: 0.6.0
 Authors@R: c(
-    person("Carlos Alberto", "Silva", email = "carlos_engflorestal@outlook.com", role = c("aut", "cre", "cph")),
-    person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cph")),
-    person("Ruben", "Valbuena", email = "r.valbuena@bangor.ac.uk", role = c("aut","ctb")),
-    person("Steven", "Hancock", email = "steven.hancock@ed.ac.uk", role = c("aut","ctb")),
-    person("Adrian", "Cardil", email = "adriancardil@gmail.com", role = c("aut","ctb")),
-    person("Eben North", "Broadbent", email = "eben@ufl.edu", role = c("aut","ctb")),
-    person("Danilo Roberti Alves de", "Almeida", email = "daniloflorestas@gmail.com", role = c("aut","ctb")),
-    person("Celso H. L.", "Silva Junior", email = "celso.junior@inpe.br", role = c("aut","ctb")),
-    person("Carine", "Klauberg", email = "carine_klauberg@hotmail.com", role = c("aut","ctb")),
-    person("Burton", "Garbow", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
-    person("Kenneth", "Hillstrom", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
-    person("Jorge", "More", email = "", role = ("cph"), comment = "Is the author of the MINPACK-1 Least Squares Fitting Library"),
-    person("Craig", "Markwardt", email = "", role = ("cph"), comment = "Is the author of the enhanced MINPACK-1 Least Squares Fitting Library"))
-Maintainer: Carlos Alberto Silva <carlos_engflorestal@outlook.com>
-Description: Set of tools for downloading, reading, visualizing and processing GEDI Level1B, Level2A and Level2B data.
+    person("Carlos Alberto", "Silva", email = "c.silva@ufl.edu", role = c("aut", "cph", "cre")),
+    person("Caio", "Hamamura", email = "caiohamamura@gmail.com", role = c("aut", "cph")))
+Description: Provides an end-to-end workflow for NASA Global Ecosystem
+  Dynamics Investigation (GEDI) Level 1B, Level 2A, Level 2B, Level 3, Level
+  4A, and Level 4B data. Functions search NASA catalogues, download granules,
+  stream HDF5 products from Earthdata Cloud, and extract geolocations,
+  waveforms, elevation and relative-height metrics, canopy cover, plant area
+  profiles, and aboveground biomass. Methods quality-filter and spatially clip
+  HDF5, tabular, and raster products; calculate footprint and polygon
+  statistics; create gridded summaries; and visualize orbital tracks and
+  measurements. The package also simulates GEDI-like waveforms from airborne
+  laser-scanning point clouds and supports spatial sampling, predictive
+  modelling, ancillary-data extraction, and wall-to-wall upscaling with
+  optional Google Earth Engine workflows.
 License: GPL-3
 Encoding: UTF-8
-LazyData: true
 Depends: methods
 Imports: bit64, curl, data.table, fs, getPass, ggplot2, hdf5r,
-        jsonlite, lazyeval, raster, rgdal, rgeos, RColorBrewer, sp,
-        stats
-Suggests: lattice, leaflet, leafsync, lidR, plot3D, rasterVis, viridis
-SystemRequirements: GNU Scientific Library (>= 2.1), HDF5 (>= 1.8.13),
-        libgeotiff (>= 1.4.0), szip (>= 2.1), zlib (>= 1.2)
-NeedsCompilation: yes
-RoxygenNote: 7.1.0
-BugReports: https://groups.yahoo.com/neo/groups/rGEDI
+        jsonlite, lazyeval, RColorBrewer, R6, sf, stats, terra
+Suggests: gifski, httr2, lattice, leaflet, leafsync, lidR, maps,
+        plot3D, png, rasterVis, randomForest, reticulate, stringr,
+        testthat (>= 3.0.0), viridis
+BugReports: https://github.com/carlos-alberto-silva/rGEDI/issues
 URL: https://github.com/carlos-alberto-silva/rGEDI
-Copyright: inst/COPYRIGHTS
-Author: Carlos Alberto Silva [aut, cre, cph],
-  Caio Hamamura [aut, cph],
-  Ruben Valbuena [aut, ctb],
-  Steven Hancock [aut, ctb],
-  Adrian Cardil [aut, ctb],
-  Eben North Broadbent [aut, ctb],
-  Danilo Roberti Alves de Almeida [aut, ctb],
-  Celso H. L. Silva Junior [aut, ctb],
-  Carine Klauberg [aut, ctb],
-  Burton Garbow [cph] (Is the author of the MINPACK-1 Least Squares
-    Fitting Library),
-  Kenneth Hillstrom [cph] (Is the author of the MINPACK-1 Least Squares
-    Fitting Library),
-  Jorge More [cph] (Is the author of the MINPACK-1 Least Squares Fitting
-    Library),
-  Craig Markwardt [cph] (Is the author of the enhanced MINPACK-1 Least
-    Squares Fitting Library)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
+NeedsCompilation: no
+Packaged: 2026-10-26 01:50:05 UTC; carlo
+Author: Carlos Alberto Silva [aut, cph, cre],
+  Caio Hamamura [aut, cph]
+Maintainer: Carlos Alberto Silva <c.silva@ufl.edu>
 Repository: CRAN
-Repository/R-Forge/Project: rgedi
-Repository/R-Forge/Revision: 38
-Repository/R-Forge/DateTimeStamp: 2021-01-19 13:58:51
-Date/Publication: 2021-01-20 17:10:03 UTC
-Packaged: 2021-01-19 14:17:31 UTC; rforge
+Date/Publication: 2026-11-10 15:50:02 UTC

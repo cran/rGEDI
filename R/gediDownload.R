@@ -4,15 +4,18 @@
 #'Earth Explore login Information for downloading the data.
 #'
 #'@param filepath Vector object; path to the GEDI data
-#'@param outdir Vector object, output directory for downloading GEDI data, default tempdir()
+#'@param outdir Vector object, output directory for downloading GEDI data, default [tempdir()]
 #'@param overwrite logical; overwrite file if they already exists in destination, default FALSE
 #'@param buffer_size integer; the size of download chunk in KB to hold in memory before writing to file, default 512.
 #'@param timeout integer; connection timeout in seconds.
+#'@param netrc Optional path to an existing NASA Earthdata `.netrc` file. By
+#'default, uses the `NETRC` environment variable before prompting.
 #'
-#'@return No return value on success, on failure it will \code{stop()}
-#'@references Credits to Cole Krehbiel. Code adapted from <https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_r/browse/DAACDataDownload.R>
+#'@return The normalized paths of the downloaded files, invisibly. On failure
+#'  the function stops with an error.
+#'@references Credits to Cole Krehbiel. Code adapted from \url{https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_r/browse/DAACDataDownload.R}
 #'@examples
-#'\dontrun{
+#'\donttest{
 #'# Set path to GEDI data
 #'# herein we will only download xml metedata
 #'filepath=c(paste0(
@@ -27,6 +30,7 @@
 #'# Set dir to download files to
 #'outdir=tempdir()
 #'
+#'if (nzchar(Sys.getenv("NASA_USER")) && nzchar(Sys.getenv("NASA_PASSWORD"))) {
 #'# Create .netrc file
 #'netrc = file.path(outdir, ".netrc")
 #'netrc_conn <- file(netrc)
@@ -41,26 +45,33 @@
 #'#' Downloading GEDI data
 #'gediDownload(filepath,outdir)
 #'}
+#'}
 #'@import curl
 #'@export
-gediDownload<-function(filepath, outdir = NULL, overwrite = FALSE, buffer_size = 512, timeout=10){
+gediDownload<-function(filepath, outdir = NULL, overwrite = FALSE, buffer_size = 512, timeout=10,
+                       netrc = Sys.getenv("NETRC", unset = "")){
   if (is.null(outdir)) {
-    outdir == tempdir()
+    outdir <- tempdir()
   }
+  if (!dir.exists(outdir)) dir.create(outdir, recursive = TRUE)
   stopifnotMessage(
     "outdir is not a valid path" = checkParentDir(outdir),
     "overwrite is not logical" = checkLogical(overwrite),
     "buffer_size is not an integer" = checkInteger(buffer_size)
   )
   buffer_size = as.integer(buffer_size)
-  netrc = getNetRC(outdir)
+  if (!nzchar(netrc) || !file.exists(netrc)) netrc <- getNetRC(outdir)
+  netrc <- normalizePath(netrc, winslash = "/", mustWork = TRUE)
 
   files<-filepath
   n_files = length(files)
+  if (!n_files) stop("`filepath` must contain at least one GEDI URL.", call. = FALSE)
+  downloaded <- character(n_files)
 
   # Download all files in filepath vector
-  for (i in 1:n_files) {
+  for (i in seq_along(files)) {
     url = files[i]
+    downloaded[i] <- file.path(outdir, basename(sub("[?#].*$", "", url)))
     message("------------------------------")
     message(sprintf("Downloading file %d/%d: %s", i, n_files, basename(url)))
     message("------------------------------")
@@ -78,10 +89,15 @@ gediDownload<-function(filepath, outdir = NULL, overwrite = FALSE, buffer_size =
       stop(sprintf("File %s has not been downloaded properly!", basename(url)))
     }
   }
+  invisible(normalizePath(downloaded, winslash = "/", mustWork = TRUE))
 }
 
+#' @rdname gediDownload
+#' @export
+downloadGEDI <- gediDownload
+
 gediDownloadFile = function(url, outdir, overwrite, buffer_size, netrc, timeout) {
-  filename <- file.path(outdir, basename(url)) # Keep original filename
+  filename <- file.path(outdir, basename(sub("[?#].*$", "", url))) # Keep original filename
   if((! overwrite) && file.exists(filename)) {
     message("Skipping this file, already downloaded!")
     return(0)
@@ -103,7 +119,6 @@ gediDownloadFile = function(url, outdir, overwrite, buffer_size, netrc, timeout)
     fileHandle=file(resume, open="ab", raw = T)
     message("Connecting...")
     conn = tryCatch(curl::curl(url, handle=h, open="rb"), error = function(e) {
-          file.remove(netrc)
           stop(e)
         })
     message("Connected successfully, downloading...")
@@ -125,7 +140,7 @@ gediDownloadFile = function(url, outdir, overwrite, buffer_size, netrc, timeout)
     }
     message(sprintf("\rDownloading... %.2f/%.2fMB (100%%)    ",
             total_size/1024.0/1024.0,
-            total_size/1024.0/1024.0))
+            total_size/1024.0/1024.0), appendLF = FALSE)
     close(fileHandle)
     close(conn)
     file.rename(resume, filename)
@@ -149,8 +164,8 @@ getNetRC = function(dl_dir) {
 
     # User will be prompted for NASA Earthdata Login Username and Password below
     writeLines(c("machine urs.earthdata.nasa.gov",
-                 sprintf("login %s", getPass::getPass(msg = "Enter NASA Earthdata Login Username \n (or create an account at urs.earthdata.nasa.gov) :")),
-                 sprintf("password %s", getPass::getPass(msg = "Enter NASA Earthdata Login Password:"))), netrc_conn)
+                 sprintf("login %s", getPass::getPass("Enter NASA Earthdata Login Username \n (or create an account at urs.earthdata.nasa.gov) :")),
+                 sprintf("password %s", getPass::getPass("Enter NASA Earthdata Login Password:"))), netrc_conn)
     close(netrc_conn)
     message("A .netrc file with your Earthdata Login credentials was stored in the output directory ")
   }

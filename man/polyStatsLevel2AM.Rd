@@ -7,7 +7,7 @@
 polyStatsLevel2AM(level2AM, func, id=NULL)
 }
 \arguments{
-\item{level2AM}{A GEDI Level2AM object (output of \code{\link[rGEDI:getLevel2AM]{getLevel2AM}} function).
+\item{level2AM}{A GEDI Level2AM object (output of \code{\link[=getLevel2AM]{getLevel2AM()}} function).
 An S4 object of class "data.table".}
 
 \item{func}{The function to be applied for computing the defined statistics}
@@ -15,8 +15,8 @@ An S4 object of class "data.table".}
 \item{id}{A vector containing the polygon id for each GEDI observation. Default is NULL}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
-containting Statistics of GEDI level2A defined metrics
+Returns an S4 object of class \link[data.table:data.table]{data.table::data.table}
+Containing Statistics of GEDI level2A defined metrics
 }
 \description{
 Computes a Series of Statistics from GEDI derived Elevation and Height Metrics (Level2A)
@@ -24,55 +24,59 @@ within a given area defined or not by a polygon
 }
 \examples{
 # Specifying the path to GEDI level2A data (zip file)
-outdir = tempdir()
+outdir <- tempdir()
 level2A_fp_zip <- system.file("extdata",
-                  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
-                  package="rGEDI")
+  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
+  package = "rGEDI"
+)
 
 # Unzipping GEDI level2A data
-level2Apath <- unzip(level2A_fp_zip,exdir = outdir)
+level2Apath <- unzip(level2A_fp_zip, exdir = outdir)
 
 # Reading GEDI level2A data (h5 file)
-level2a<-readLevel2A(level2Apath=level2Apath)
+level2a <- readLevel2A(level2Apath = level2Apath)
 
 # Specifying the path to shapefile
-polygon_filepath <- system.file("extdata", "stands_cerrado.shp", package="rGEDI")
+polygon_filepath <- system.file("extdata", "stands_cerrado.shp", package = "rGEDI")
 
-# Reading shapefile as SpatialPolygonsDataFrame object
-library(raster)
-polygon_spdf<-shapefile(polygon_filepath)
+# Reading shapefile as sf object
+library(sf)
+polygon <- sf::st_read(polygon_filepath)
 
 # Extracting GEDI Eleveation and Relative Metrics (level2A)
-level2AM<-getLevel2AM(level2a)
+level2AM <- getLevel2AM(level2a)
 head(level2AM)
 
 # Clipping GEDI data by geometry
-level2AM_clip = clipLevel2AMGeometry(level2AM, polygon_spdf, split_by="id")
+level2AM_clip <- clipLevel2AMGeometry(level2AM, polygon, split_by = "id")
 
 #' Define your own function
-mySetOfMetrics = function(x)
-{
-metrics = list(
-   min =min(x), # Min of x
-   max = max(x), # Max of x
-   mean = mean(x), # Mean of x
-   sd = sd(x)# Sd of x
- )
- return(metrics)
+mySetOfMetrics <- function(x) {
+  metrics <- list(
+    min = min(x), # Min of x
+    max = max(x), # Max of x
+    mean = mean(x), # Mean of x
+    sd = sd(x) # Sd of x
+  )
+  return(metrics)
 }
 
 # Computing the maximum of RH100
-RH100max<-polyStatsLevel2AM(level2AM_clip,func=max(rh100), id=NULL)
+RH100max <- polyStatsLevel2AM(level2AM_clip, func = max(rh100))
 
 # Computing the maximum of RH100 stratified by polygon
-RH100max_poly<-polyStatsLevel2AM(level2AM_clip,func=max(rh100), id=NULL)
+RH100max_poly <- polyStatsLevel2AM(level2AM_clip, func = max(rh100), id = "id")
 
 # Computing a serie statistics for GEDI metrics stratified by polygon
-RH100metrics<-polyStatsLevel2AM(level2AM_clip,func=mySetOfMetrics(rh100),
-                     id=level2AM_clip$id)
+RH100metrics <- polyStatsLevel2AM(level2AM_clip,
+  func = mySetOfMetrics(rh100),
+  id = "id"
+)
+
+head(RH100metrics)
 
 close(level2a)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_av001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 }

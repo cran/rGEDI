@@ -4,14 +4,16 @@
 \alias{getLevel2BPAVDProfile}
 \title{Get GEDI Plant Area Volume Density (PAVD) Index Profile (GEDI Level2B)}
 \usage{
-getLevel2BPAVDProfile(level2b)
+getLevel2BPAVDProfile(level2b, beams = NULL)
 }
 \arguments{
-\item{level2b}{A GEDI Level2B object (output of \code{\link[rGEDI:readLevel2B]{readLevel2B}} function).
+\item{level2b}{A GEDI Level2B object (output of \code{\link[=readLevel2B]{readLevel2B()}} function).
 An S4 object of class "gedi.level2b".}
+
+\item{beams}{Optional beam names. \code{NULL} reads every beam.}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}
+Returns an S4 object of class \link[data.table:data.table]{data.table::data.table}
 containing the Plant Area Volume Density Index.
 }
 \description{
@@ -20,7 +22,7 @@ This function extracts the Plant Area Volume Density (PAVD) Profile from GEDI Le
 \details{
 Characteristics. Flag indicating likely invalid waveform (1=valid, 0=invalid).
 \itemize{
-\item \emph{beam} Beam identifie
+\item \emph{beam} Beam identifier
 \item \emph{shot_number} Shot number
 \item \emph{algorithmrun_flag} The L2B algorithm is run if this flag is set to 1 indicating data have sufficient waveform fidelity for L2B to run
 \item \emph{l2b_quality_flag} L2B quality flag
@@ -53,5 +55,5 @@ head(level2BPAVDProfile)
 close(level2b)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_bv001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-b-002}
 }

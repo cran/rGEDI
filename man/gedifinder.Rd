@@ -2,69 +2,61 @@
 % Please edit documentation in R/gedifinder.R
 \name{gedifinder}
 \alias{gedifinder}
-\title{GEDI finder}
+\title{Find GEDI granules through NASA CMR}
 \usage{
 gedifinder(
   product,
-  ul_lat,
-  ul_lon,
-  lr_lat,
-  lr_lon,
-  version = "001",
-  daterange = NULL
+  ul_lat = NULL,
+  ul_lon = NULL,
+  lr_lat = NULL,
+  lr_lon = NULL,
+  version = NULL,
+  daterange = NULL,
+  access = c("https", "s3", "opendap", "all"),
+  cloud_hosted = TRUE,
+  return = c("url", "table"),
+  page_size = 2000L,
+  cloud_computing = FALSE,
+  persist = TRUE,
+  orbit = NULL
 )
 }
 \arguments{
-\item{product}{GEDI data level; Options: "GEDI01_B", "GEDI02_A" or "GEDI02_B"}
+\item{product}{One of \code{GEDI01_B}, \code{GEDI02_A}, \code{GEDI02_B}, \code{GEDI03},
+\code{GEDI04_A}, or \code{GEDI04_B}.}
 
-\item{ul_lat}{Numeric. Upper left (ul) corner coordinates, in lat (decimal degrees) for the bounding box of the area of interest.}
+\item{ul_lat, ul_lon, lr_lat, lr_lon}{Bounding coordinates in decimal degrees.}
 
-\item{ul_lon}{Numeric. Upper left (ul) corner coordinates, in lon (decimal degrees) for the bounding box of the area of interest.}
+\item{version}{Product version. \code{NULL} selects the current supported version.}
 
-\item{lr_lat}{Numeric. Lower right (ul) corner coordinates, in lat (decimal degrees) for the bounding box of the area of interest.}
+\item{daterange}{Optional two-element date or date-time vector.}
 
-\item{lr_lon}{Numeric. Lower right (ul) corner coordinates, in lon (decimal degrees) for the bounding box of the area of interest.}
+\item{access}{Requested link type: \code{"https"}, \code{"s3"}, \code{"opendap"}, or \code{"all"}.}
 
-\item{version}{Character. The version of the GEDI product files to be returned. Default "001".}
+\item{cloud_hosted}{Logical retained for backward compatibility. The current
+GEDI collection identifiers resolve to their Earthdata Cloud holdings.}
 
-\item{daterange}{Vector. Date range. Specify your start and end dates (year-month-day). Ex.: c("2019-07-01","2020-05-22"). If NULL (default),
-the date range filter will be not applied.}
+\item{return}{Return a URL vector or a metadata table.}
+
+\item{page_size}{CMR page size.}
+
+\item{cloud_computing}{Logical. When \code{TRUE}, authenticate with Earthdata and
+return HTTPS granules marked for direct cloud streaming by \code{\link[=openGEDI]{openGEDI()}} or
+the product-specific \verb{readLevel*()} function.}
+
+\item{persist}{Logical; allow Earthaccess to persist an interactive login
+when \code{cloud_computing = TRUE}.}
+
+\item{orbit}{Optional GEDI orbit number, such as \code{1964} or \code{"O01964"}.
+When supplied, the spatial bounding box is omitted so CMR returns every
+production granule belonging to that orbit.}
 }
 \value{
-Return a vector object pointing out the path saving the downloaded GEDI data within
-the boundary box coordinates provided
+A character vector or \link[data.table:data.table]{data.table::data.table}.
 }
 \description{
-This function finds the exact granule(s) that contain GEDI data for a given region of interest and date range
-'
-}
-\examples{
-\donttest{
-# gedifinder is a web service provided by NASA
-# usually the request takes more than 5 seconds
-
-# Specifying bounding box coordinates
-ul_lat<- 42.0
-ul_lon<- -100
-lr_lat<- 40.0
-lr_lon<- -96.0
-
-# Specifying the date range
-daterange=c("2019-07-01","2020-05-22")
-
-# Extracting the path to GEDI data for the specified boundary box coordinates
-gedi02b_list<-gedifinder(product="GEDI02_B",
-                                ul_lat,
-                                ul_lon,
-                                lr_lat,
-                                lr_lon,
-                                version="001",
-                                daterange=daterange)
-
-}
+Find GEDI granules through NASA CMR
 }
 \seealso{
-bbox: Defined by the upper left and lower right corner coordinates, in lat,lon ordering, for the bounding box of the area of interest (e.g. [ul_lat,ul_lon,lr_lat,lr_lon]).
-This function relies on the existing LP DAAC gedifinder tool:
-https://lpdaacsvc.cr.usgs.gov/services/gedifinder
+\url{https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html}
 }

@@ -8,15 +8,15 @@ GEDI derived Elevation and Height Metrics (Level2A)}
 gridStatsLevel2AM(level2AM, func, res)
 }
 \arguments{
-\item{level2AM}{A GEDI Level2AM object (output of \code{\link[rGEDI:getLevel2AM]{getLevel2AM}} function).
+\item{level2AM}{A GEDI Level2AM object (output of \code{\link[=getLevel2AM]{getLevel2AM()}} function).
 An S4 object of class "data.table".}
 
 \item{func}{The function(s) to be applied to each cell}
 
-\item{res}{Spatial resolution in decimal degrees for the output raster layer}
+\item{res}{Spatial resolution in decimal degrees for the output stars raster layer}
 }
 \value{
-Return a raster layer(s) of selected GEDI Elevation and Height Metric(s)
+Return a stars raster layer(s) of selected GEDI Elevation and Height Metric(s)
 }
 \description{
 This function computes a series of user defined descriptive statistics within
@@ -24,47 +24,53 @@ each grid cell for GEDI derived Elevation and Height Metrics (Level2A)
 }
 \examples{
 # specify the path to GEDI level2A data (zip file)
-outdir = tempdir()
+outdir <- tempdir()
 level2A_fp_zip <- system.file("extdata",
-                  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
-                  package="rGEDI")
+  "GEDI02_A_2019108080338_O01964_T05337_02_001_01_sub.zip",
+  package = "rGEDI"
+)
 
 # Unzipping GEDI level2A data
-level2Apath <- unzip(level2A_fp_zip,exdir = outdir)
+level2Apath <- unzip(level2A_fp_zip, exdir = outdir)
 
 # Reading GEDI level2A data (h5 file)
-level2a<-readLevel2A(level2Apath=level2Apath)
+level2a <- readLevel2A(level2Apath = level2Apath)
 
 # Get GEDI derived Elevation and Height Metrics
-level2AM<-getLevel2AM(level2a)
+level2AM <- getLevel2AM(level2a)
 head(level2AM)
 
 #' Define your own function
-mySetOfMetrics = function(x)
-{
-metrics = list(
-   min =min(x), # Min of z
-   max = max(x), # Max of z
-   mean = mean(x), # Mean of z
-   sd = sd(x)# Sd of z
-   )
-   return(metrics)
+mySetOfMetrics <- function(x) {
+  metrics <- list(
+    min = min(x), # Min of z
+    max = max(x), # Max of z
+    mean = mean(x), # Mean of z
+    sd = sd(x) # Sd of z
+  )
+  return(metrics)
 }
 
 #' Computing a serie of GEDI metrics
-ZTstats<-gridStatsLevel2AM(level2AM = level2AM, func=mySetOfMetrics(elev_highestreturn), res=0.005)
-plot(ZTstats)
+ZTstats <- gridStatsLevel2AM(
+  level2AM = level2AM,
+  func = mySetOfMetrics(elev_highestreturn),
+  res = 0.005
+)
+if (interactive()) plot(ZTstats)
 
-#' Computing the maximum of RH100 only
-maxRH100<-gridStatsLevel2AM(level2AM = level2AM, func=max(rh100), res=0.005)
-plot(maxRH100)
+if (interactive()) {
+  # Computing the maximum of RH100 only
+  maxRH100 <- gridStatsLevel2AM(level2AM, mySetOfMetrics(rh100), res = 0.0005)
+  plot(maxRH100)
 
-#' Computing the mean of ZG only
-ZGmean<-gridStatsLevel2AM(level2AM = level2AM, func=mean(elev_lowestmode), res=0.005)
-plot(ZGmean)
+  # Computing the mean of ZG only
+  ZGmean <- gridStatsLevel2AM(level2AM, mean(elev_lowestmode), res = 0.005)
+  plot(ZGmean)
+}
 
 close(level2a)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi02_av001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi02-a-002}
 }

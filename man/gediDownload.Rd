@@ -2,6 +2,7 @@
 % Please edit documentation in R/gediDownload.R
 \name{gediDownload}
 \alias{gediDownload}
+\alias{downloadGEDI}
 \title{Download GEDI data}
 \usage{
 gediDownload(
@@ -9,29 +10,43 @@ gediDownload(
   outdir = NULL,
   overwrite = FALSE,
   buffer_size = 512,
-  timeout = 10
+  timeout = 10,
+  netrc = Sys.getenv("NETRC", unset = "")
+)
+
+downloadGEDI(
+  filepath,
+  outdir = NULL,
+  overwrite = FALSE,
+  buffer_size = 512,
+  timeout = 10,
+  netrc = Sys.getenv("NETRC", unset = "")
 )
 }
 \arguments{
 \item{filepath}{Vector object; path to the GEDI data}
 
-\item{outdir}{Vector object, output directory for downloading GEDI data, default tempdir()}
+\item{outdir}{Vector object, output directory for downloading GEDI data, default \code{\link[=tempdir]{tempdir()}}}
 
 \item{overwrite}{logical; overwrite file if they already exists in destination, default FALSE}
 
 \item{buffer_size}{integer; the size of download chunk in KB to hold in memory before writing to file, default 512.}
 
 \item{timeout}{integer; connection timeout in seconds.}
+
+\item{netrc}{Optional path to an existing NASA Earthdata \code{.netrc} file. By
+default, uses the \code{NETRC} environment variable before prompting.}
 }
 \value{
-No return value on success, on failure it will \code{stop()}
+The normalized paths of the downloaded files, invisibly. On failure
+the function stops with an error.
 }
 \description{
 Download GEDI data from LP DAAC Data Pool. Users will need to enter their
 Earth Explore login Information for downloading the data.
 }
 \examples{
-\dontrun{
+\donttest{
 # Set path to GEDI data
 # herein we will only download xml metedata
 filepath=c(paste0(
@@ -46,6 +61,7 @@ filepath=c(paste0(
 # Set dir to download files to
 outdir=tempdir()
 
+if (nzchar(Sys.getenv("NASA_USER")) && nzchar(Sys.getenv("NASA_PASSWORD"))) {
 # Create .netrc file
 netrc = file.path(outdir, ".netrc")
 netrc_conn <- file(netrc)
@@ -61,6 +77,7 @@ close(netrc_conn)
 gediDownload(filepath,outdir)
 }
 }
+}
 \references{
-Credits to Cole Krehbiel. Code adapted from <https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_r/browse/DAACDataDownload.R>
+Credits to Cole Krehbiel. Code adapted from \url{https://git.earthdata.nasa.gov/projects/LPDUR/repos/daac_data_download_r/browse/DAACDataDownload.R}
 }

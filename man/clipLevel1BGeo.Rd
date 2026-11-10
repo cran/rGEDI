@@ -7,8 +7,7 @@
 clipLevel1BGeo(level1BGeo, xmin, xmax, ymin, ymax)
 }
 \arguments{
-\item{level1BGeo}{A GEDI Level1b object (output of \code{\link[rGEDI:readLevel1B]{readLevel1B}} function).
-An S4 object of class "gedi.level1b".}
+\item{level1BGeo}{A \code{\link[data.table:data.table-class]{data.table::data.table}} resulting from \code{\link[=getLevel1BGeo]{getLevel1BGeo()}}.}
 
 \item{xmin}{Numeric. West longitude (x) coordinate of the bounding rectangle, in decimal degrees.}
 
@@ -19,52 +18,53 @@ An S4 object of class "gedi.level1b".}
 \item{ymax}{Numeric. North latitude (y) coordinate of the bounding rectangle, in decimal degrees.}
 }
 \value{
-Returns an S4 object of class \code{\link[data.table:data.table]{data.table-class}}.
+Returns an S4 object of class \code{\link[data.table:data.table-class]{data.table::data.table}}.
 }
 \description{
-This function clips GEDI level1B extracted geolocation (level1BGeo)
+This function clips GEDI level1B extracted geolocation (\code{\link[=getLevel1BGeo]{getLevel1BGeo()}})
 data a within given bounding coordinates
 }
 \examples{
 # Specifying the path to GEDI level1B data (zip file)
-outdir = tempdir()
+outdir <- tempdir()
 level1B_fp_zip <- system.file("extdata",
-                  "GEDI01_B_2019108080338_O01964_T05337_02_003_01_sub.zip",
-                  package="rGEDI")
+  "GEDI01_B_2019108080338_O01964_T05337_02_003_01_sub.zip",
+  package = "rGEDI"
+)
 
 # Unzipping GEDI level1B data
-level1Bpath <- unzip(level1B_fp_zip,exdir = outdir)
+level1Bpath <- unzip(level1B_fp_zip, exdir = outdir)
 
 # Reading GEDI level1B data (h5 file)
-level1b<-readLevel1B(level1Bpath=level1Bpath)
+level1b <- readLevel1B(level1Bpath = level1Bpath)
 
 # Extracting GEDI Full Waveform Geolocations
-level1bGeo<-getLevel1BGeo(level1b)
+level1bGeo <- getLevel1BGeo(level1b)
 
 # Bounding rectangle coordinates
-xmin = -44.15036
-xmax = -44.10066
-ymin = -13.75831
-ymax = -13.71244
+xmin <- -44.15036
+xmax <- -44.10066
+ymin <- -13.75831
+ymax <- -13.71244
 
 # Clipping GEDI Full Waveform Geolocations by boundary box extent
-level1bGeo_clip <- clipLevel1BGeo(level1bGeo,xmin, xmax, ymin, ymax)
+level1bGeo_clip <- clipLevel1BGeo(level1bGeo, xmin, xmax, ymin, ymax)
 
-hasLeaflet = require(leaflet)
-
-if (hasLeaflet){
-leaflet() \%>\%
- addCircleMarkers(level1bGeo_clip$longitude_bin0,
-                  level1bGeo_clip$latitude_bin0,
-                  radius = 1,
-                  opacity = 1,
-                  color = "red")  \%>\%
- addScaleBar(options = list(imperial = FALSE)) \%>\%
- addProviderTiles(providers$Esri.WorldImagery)
+if (interactive() && requireNamespace("leaflet", quietly = TRUE)) {
+  library(leaflet)
+  leaflet() \%>\%
+    addCircleMarkers(level1bGeo_clip$longitude_bin0,
+      level1bGeo_clip$latitude_bin0,
+      radius = 1,
+      opacity = 1,
+      color = "red"
+    ) \%>\%
+    addScaleBar(options = list(imperial = FALSE)) \%>\%
+    addProviderTiles(providers$Esri.WorldImagery)
 }
 
 close(level1b)
 }
 \seealso{
-https://lpdaac.usgs.gov/products/gedi01_bv001/
+\url{https://www.earthdata.nasa.gov/data/catalog/lpcloud-gedi01-b-002}
 }
