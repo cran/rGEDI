@@ -15,6 +15,3 @@ Class for GEDI Level 4A footprint biomass data
 GEDI04_A granule.}
 }}
 
-\seealso{
-\url{https://daac.ornl.gov/GEDI/guides/GEDI_L4A_AGB_Density_V3.html}
-}

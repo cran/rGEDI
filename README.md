@@ -235,11 +235,182 @@ Level 3 and Level 4B are raster collections. Download the selected metric
 GeoTIFF first and then use `readLevel3()` or `readLevel4B()`. This avoids the
 Earthdata redirect restrictions encountered by GDAL virtual-file reads.
 
+### Stream footprint products from gediDB
+
+[gediDB](https://gedidb.readthedocs.io/en/latest/user/tiledb_database.html)
+provides a public, analysis-ready TileDB database for GEDI Level 2A, Level 2B,
+Level 4A, and Level 4C. It does not require NASA credentials. Install the
+optional Python backend once:
+
+~~~r
+rGEDI_configure(gedidb = TRUE, install = TRUE)
+~~~
+
+Select source = "gedidb" during the search. The finder checks the service and
+returns only a lazy remote reference; it does not transfer footprints. The
+read function opens that reference, and the extraction function requests the
+selected variables.
+
+~~~r
+l2a_address <- gedifinder(
+  "GEDI02_A",
+  ul_lat = ymax, ul_lon = xmin, lr_lat = ymin, lr_lon = xmax,
+  version = "003", daterange = daterange, source = "gedidb"
+)
+l2a_remote <- readLevel2A(l2a_address)
+l2a_rh98 <- getLevel2AM(l2a_remote, rh = 98, quality = TRUE)
+
+l4a_address <- gedifinder(
+  "GEDI04_A",
+  ul_lat = ymax, ul_lon = xmin, lr_lat = ymin, lr_lon = xmax,
+  version = "003", daterange = daterange, source = "gedidb"
+)
+l4a_remote <- readLevel4A(l4a_address)
+l4a_agbd <- getLevel4A(
+  l4a_remote,
+  cols = c("shot_number", "agbd", "agbd_se", "l4a_quality_flag_rel3"),
+  quality = TRUE
+)
+~~~
+
+The results are ordinary data.table footprint tables, so the same clipping,
+sampling, rasterization, statistics, and modeling functions apply. For an
+exact 1 km grid, supply a projected SpatRaster template:
+
+~~~r
+grid_points <- rbind(
+  l2a_rh98[, .(lon_lowestmode, lat_lowestmode)],
+  l4a_agbd[, .(lon_lowestmode, lat_lowestmode)]
+)
+grid_points <- terra::vect(
+  as.data.frame(grid_points),
+  geom = c("lon_lowestmode", "lat_lowestmode"), crs = "EPSG:4326"
+)
+grid_points <- terra::project(grid_points, "EPSG:6933")
+bounds <- as.vector(terra::ext(grid_points))
+bounds <- c(
+  floor(bounds[1] / 1000) * 1000, ceiling(bounds[2] / 1000) * 1000,
+  floor(bounds[3] / 1000) * 1000, ceiling(bounds[4] / 1000) * 1000
+)
+template_1km <- terra::rast(
+  terra::ext(bounds),
+  resolution = 1000, crs = "EPSG:6933"
+)
+
+rh98_1km <- rasterize(l2a_rh98, "rh98", template = template_1km)
+agbd_1km <- rasterize(l4a_agbd, "agbd", template = template_1km)
+~~~
+
+The first query in an R session opens remote TileDB metadata. Later queries
+reuse a cached provider. Call gedidb_disconnect() when the remote workflow is
+finished.
+
+For larger areas, retain a lazy gediDB query and process independent spatial
+tiles concurrently. Each worker downloads only the selected metric,
+coordinates, and quality fields and immediately reduces the footprints to
+grid-cell totals. Supplying `filename` keeps large rasters disk-backed.
+
+~~~r
+l2a_rh98_lazy <- getLevel2AM(
+  l2a_remote, rh = 98, quality = TRUE, collect = FALSE
+)
+
+rh98_parallel_1km <- rasterize(
+  l2a_rh98_lazy, "rh98",
+  res = 1000, output_crs = "EPSG:6933",
+  parallel = TRUE, workers = 4, tile_size = 5,
+  filename = file.path(outdir, "gedidb_rh98_1km.tif")
+)
+~~~
+
+Use a small number of workers first. Every worker opens an independent remote
+TileDB connection, so excessive parallelism can reduce performance or overload
+the public service. A mission-wide grid covers billions of footprints and
+should be treated as a resumable cloud/HPC batch job, not an interactive query.
+
+The same opt-in controls are available for other independent batch operations.
+Open HDF5 handles are never shared: each worker opens, extracts, and closes its
+own granule, and combined tables retain input order.
+
+~~~r
+level2a_collection <- readLevel2A(level2a_files)
+metrics <- getLevel2AM(
+  level2a_collection, rh = 98, quality = TRUE,
+  parallel = TRUE, workers = 4
+)
+
+simulated <- gediWFSimulator(
+  als_points, coords = footprint_centres,
+  output = file.path(outdir, "simulated_gedi.h5"),
+  parallel = TRUE, workers = 4, seed = 42
+)
+
+archive_cells <- accumulateGEDIGranules(
+  manifest_rows, region = archive_region,
+  parallel = TRUE, workers = 4
+)
+~~~
+
+Parallelism is intentionally not applied to a single open HDF5 object or to
+Google Earth Engine operations. Earth Engine already executes computations on
+Google's servers, while sharing local HDF5 handles between processes is unsafe.
+
+### Search and process GEDI with Google Earth Engine
+
+The same finder-reader-extractor sequence also works with Google Earth Engine.
+Initialize the project once per R session, then select `source = "gee"`.
+Unlike Earthdata and gediDB, Earth Engine currently serves GEDI Version 2
+(Level 2A/2B and Level 4B) and Version 2.1 (Level 4A), so rGEDI validates the
+version and records it in the returned reference.
+
+~~~r
+ee_initialize(project = "ee-carlossilvaengflorestal")
+
+l2a_gee_address <- gedifinder(
+  "GEDI02_A",
+  ul_lat = ymax, ul_lon = xmin, lr_lat = ymin, lr_lon = xmax,
+  version = "002", daterange = daterange, source = "gee"
+)
+l2a_gee <- readLevel2A(l2a_gee_address)
+
+# Collect a bounded footprint query as a data.table.
+l2a_rh98_gee <- getLevel2AM(
+  l2a_gee, rh = 98, quality = TRUE, max_features = 100000
+)
+
+# Or leave the footprints in Earth Engine and build the 1 km grid there.
+l2a_rh98_lazy <- getLevel2AM(
+  l2a_gee, rh = 98, quality = TRUE, collect = FALSE
+)
+rh98_1km_gee <- rasterize(
+  l2a_rh98_lazy, "rh98", res = 1000, output_crs = "EPSG:3857"
+)
+
+l4a_gee_address <- gedifinder(
+  "GEDI04_A",
+  ul_lat = ymax, ul_lon = xmin, lr_lat = ymin, lr_lon = xmax,
+  version = "002.1", daterange = daterange, source = "gee"
+)
+l4a_gee <- readLevel4A(l4a_gee_address)
+l4a_agbd_lazy <- getLevel4A(
+  l4a_gee, cols = "agbd", quality = TRUE, collect = FALSE
+)
+agbd_1km_gee <- rasterize(
+  l4a_agbd_lazy, "agbd", res = 1000, output_crs = "EPSG:3857"
+)
+~~~
+
+`gedifinder()` checks that the selected service is reachable before later
+functions run. `clip()` preserves a lazy GEE object, and `getTileUrl()`,
+`map_view()`, `map_download()`, and `ee_image_to_drive()` accept the lazy
+raster result directly. Use `collect = TRUE` only for focused footprint
+queries; use `collect = FALSE` for large-area gridding and mapping.
+
 ## 5 Extract, quality-filter, clip, rasterize, summarize, and simulate footprint-level products
 
 ### 5.1 Extract the Reference Ground Track and plot the GIF animation
 
-`getGEDITrack()` standardizes coordinates, beam names, and acquisition order
+`getTrack()` standardizes coordinates, beam names, and acquisition order
 from a Level 1B, 2A, 2B, or 4A object, an extracted table, or a list of open
 granules. NASA partitions one GEDI orbit into four consecutive production
 granules (`_01` through `_04`). `gedifinder(orbit = ...)` retrieves every part;
@@ -249,7 +420,7 @@ granules (`_01` through `_04`). `gedifinder(orbit = ...)` retrieves every part;
 stopifnot(length(orbit_files) == 4L)
 
 orbit_h5 <- lapply(sort(orbit_files), readLevel2A)
-rgt <- getGEDITrack(orbit_h5, every = 200, segment_gaps = FALSE)
+rgt <- getTrack(orbit_h5, every = 200, segment_gaps = FALSE)
 head(rgt)
 
 plot_gedi_orbit_animation(
@@ -534,7 +705,8 @@ by spatial proximity or shot ID, then pass the measured column as `y`. The
 following call predicts the real `rh98` response in this reproducible example.
 
 ```r
-predicted <- predictGEDI(fit, model_data, name = "predicted_rh98")
+predicted <- data.table::as.data.table(model_data)
+predicted[, predicted_rh98 := predict(fit, model_data)]
 
 # For a measured fuel-load table, the corresponding call is:
 # fuel_fit <- fit_model(fuel_training[, ..predictor_names],
@@ -545,7 +717,7 @@ predicted <- predictGEDI(fit, model_data, name = "predicted_rh98")
 ### 6.3 Rasterize predicted data
 
 ```r
-rh98_prediction <- rasterizeGEDI(
+rh98_prediction <- rasterize(
   predicted, metric = "predicted_rh98", res = 0.002,
   lon = "lon_lowestmode", lat = "lat_lowestmode", fun = mean
 )
@@ -575,14 +747,14 @@ level3_bbox <- clipLevel3(level3, c(xmin, xmax, ymin, ymax))
 level4b_bbox <- clipLevel4B(level4b, c(xmin, xmax, ymin, ymax))
 level3_aoi <- clipLevel3(level3, vect(study_area))
 level4b_aoi <- clipLevel4B(level4b, vect(study_area))
-level3_values <- extractLevel3(level3, vect(study_area))
-level4b_values <- extractLevel4B(level4b, vect(study_area))
+level3_values <- getLevel3(level3, geometry = vect(study_area))
+level4b_values <- getLevel4B(level4b, geometry = vect(study_area))
 ```
 
 ### 7.3 Compute Level 4B descriptive statistics within an AOI
 
 ```r
-level4b_stats <- polyStatsLevel4B(
+level4b_stats <- polyStats(
   level4b, vect(study_area), fun = mean, na.rm = TRUE
 )
 level4b_stats
@@ -735,7 +907,7 @@ level4a_aoi <- clipLevel4AGeometry(level4a_footprints, aoi)
 level4a_aoi <- level4a_aoi[is.finite(agbd) & agbd >= 0]
 
 set.seed(42)
-footprint_sample <- sampleGEDI(
+footprint_sample <- sample(
   level4a_aoi,
   spacedSampling(size = min(500L, nrow(level4a_aoi)), radius = 25)
 )

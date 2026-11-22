@@ -17,6 +17,3 @@ A \code{\link[terra:SpatRaster-class]{terra::SpatRaster}}.
 \description{
 Read GEDI Level 3 gridded metrics
 }
-\seealso{
-\url{https://daac.ornl.gov/GEDI/guides/GEDI_L3_LandSurface_Metrics_V3.html}
-}
